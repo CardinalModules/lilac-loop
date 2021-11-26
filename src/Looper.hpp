@@ -87,6 +87,17 @@ struct Looper : Module {
 
   float t = 0.0f;
 
+  struct MixParam : ParamQuantity {
+    std::string getDisplayValueString() override {
+      char buffer[18];
+      float m = getDisplayValue();
+      float dry = m > 0 ? 1 - m : 1;
+      float wet = m > 0 ? 1 : 1 + m;
+      sprintf(buffer, "%d%% dry, %d%% wet", (int)(100 * dry), (int)(100 * wet));
+      return std::string(buffer);
+    }
+  };
+
   Looper() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
@@ -97,7 +108,7 @@ struct Looper : Module {
     configButton(RETURN_ENABLED_PARAM);
 
     configParam(FEEDBACK_PARAM, 0.0f, 1.0f, 1.0f, "Feedback", "%", 0.0f, 100.0f);
-    configParam(MIX_PARAM, -1.0f, 1.0f, 0.0f, "Mix");
+    configParam<MixParam>(MIX_PARAM, -1.0f, 1.0f, 0.0f, "Mix");
 
     configInput(MAIN_1_INPUT, "Left");
     configInput(MAIN_2_INPUT, "Right");
